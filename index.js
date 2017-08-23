@@ -35,6 +35,30 @@ app.post('/login', (req, res) => {
     })
 });
 
+//  Get a user's password hash, because that's a smart thing to do.
+app.get('/password', (req, res) => {
+    if(!req.query.user) {
+        //  User parameter not defined
+        res.sendStatus(404);
+    }
+    else {
+        let user = req.query.user;
+        console.log(`Getting password for user ${user}`);
+        store
+        .getPassword( {
+            username: user
+        })
+        .then(({ success, password }) => {
+            if(success) {
+                res.send(password);
+            }
+            else {
+                res.sendStatus(400);
+            }
+        })
+    }
+});
+
 app.listen(7555, () => {
     console.log('Server running on http://localhost:7555')
 });

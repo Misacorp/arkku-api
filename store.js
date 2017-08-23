@@ -8,19 +8,31 @@ module.exports = {
       salt,
       encrypted_password: hash,
       username
-    })
+    });
   },
   authenticate ({ username, password }) {
     console.log(`Authenticating user ${username}`)
     return knex('user').where({ username })
-      .then(([user]) => {
-        if (!user) return { success: false }
-        const { hash } = saltHashPassword({
-          password,
-          salt: user.salt
-        })
-        return { success: hash === user.encrypted_password }
-      })
+        .then(([user]) => {
+            if (!user) return { success: false };
+            const { hash } = saltHashPassword({
+              password,
+              salt: user.salt
+            });
+            return { success: hash === user.encrypted_password }
+        });
+  },
+  getPassword ({ username }) {
+    return knex('user').where({ username })
+        .then(([user]) => {
+            if(!user) return { success: false };
+            else {
+                return {
+                    success: true,
+                    password: user.encrypted_password
+                };
+            }
+        });
   }
 }
 function saltHashPassword ({
